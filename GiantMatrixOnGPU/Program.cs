@@ -39,6 +39,7 @@ namespace GiantMatrixOnGPU
 
             Console.WriteLine($"CPU Matrix multiplication: {cpuSw.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
             Console.WriteLine($"GPU Matrix multiplication: {gpuSw.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
+            Console.WriteLine($"GPU is {cpuSw.ElapsedMilliseconds / (gpuSw.ElapsedMilliseconds * 1.0f)}x faster."); 
             Console.ReadLine();
 
             return;

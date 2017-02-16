@@ -89,7 +89,7 @@ namespace GiantMatrixOnGPU
 
             float[] ret = new float[matrix1Height * matrix2Width];
             ComputeBuffer<float> retBuffer = new ComputeBuffer<float>(_context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.CopyHostPointer,
                 ret);
             _kernel.SetMemoryArgument(2, retBuffer);
 

@@ -11,8 +11,8 @@ namespace GiantMatrixOnGPU
     {
         static void Main(string[] args)
         {
-            const int MatrixWidth = 700;
-            const int MatrixHeight = 700;
+            const int MatrixWidth = 512*2;
+            const int MatrixHeight = 424*2;
             const int NumberOfIterations = 10;
 
             float[] matrix1 = MatrixBuilder.BuildMatrix(MatrixWidth, MatrixHeight);

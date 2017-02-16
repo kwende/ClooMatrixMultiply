@@ -39,7 +39,7 @@ namespace GiantMatrixOnGPU
 
             float[] ret = new float[matrix1Height * matrix2Width];
             ComputeBuffer<float> retBuffer = new ComputeBuffer<float>(_context,
-                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer,
+                ComputeMemoryFlags.WriteOnly | ComputeMemoryFlags.UseHostPointer,
                 ret);
             _kernel.SetMemoryArgument(2, retBuffer);
 
@@ -53,13 +53,13 @@ namespace GiantMatrixOnGPU
 
             IntPtr retPtr = _commandQueue.Map(
                 retBuffer,
-                false,
+                true,
                 ComputeMemoryMappingFlags.Read,
                 0,
                 ret.Length, null);
 
             _commandQueue.Unmap(retBuffer, ref retPtr, null);
-            _commandQueue.Finish();
+            //_commandQueue.Finish();
 
             matrix1Buffer.Dispose();
             matrix2Buffer.Dispose();

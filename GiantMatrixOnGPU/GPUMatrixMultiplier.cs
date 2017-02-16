@@ -17,6 +17,57 @@ namespace GiantMatrixOnGPU
         private ComputeProgram _program;
         private ComputeKernel _kernel;
 
+
+        public float[] MultiplyMatricesZeroCopy(float[] matrix1, float[] matrix2,
+            int matrix1Height, int matrix1WidthMatrix2Height, int matrix2Width)
+        {
+            if (!_initialized)
+            {
+                Initialize();
+                _initialized = true;
+            }
+
+            ComputeBuffer<float> matrix1Buffer = new ComputeBuffer<float>(_context,
+                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer,
+                matrix1);
+            _kernel.SetMemoryArgument(0, matrix1Buffer);
+
+            ComputeBuffer<float> matrix2Buffer = new ComputeBuffer<float>(_context,
+                ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.CopyHostPointer,
+                matrix2);
+            _kernel.SetMemoryArgument(1, matrix2Buffer);
+
+            float[] ret = new float[matrix1Height * matrix2Width];
+            ComputeBuffer<float> retBuffer = new ComputeBuffer<float>(_context,
+                ComputeMemoryFlags.ReadWrite | ComputeMemoryFlags.UseHostPointer,
+                ret);
+            _kernel.SetMemoryArgument(2, retBuffer);
+
+            _kernel.SetValueArgument<int>(3, matrix1WidthMatrix2Height);
+            _kernel.SetValueArgument<int>(4, matrix2Width);
+
+            _commandQueue.Execute(_kernel,
+                new long[] { 0 },
+                new long[] { matrix2Width, matrix1Height },
+                null, null);
+
+            IntPtr retPtr = _commandQueue.Map(
+                retBuffer,
+                false,
+                ComputeMemoryMappingFlags.Read,
+                0,
+                ret.Length, null);
+
+            _commandQueue.Unmap(retBuffer, ref retPtr, null);
+            _commandQueue.Finish();
+
+            matrix1Buffer.Dispose();
+            matrix2Buffer.Dispose();
+            retBuffer.Dispose();
+
+            return ret;
+        }
+
         public float[] MultiplyMatrices(float[] matrix1, float[] matrix2,
             int matrix1Height, int matrix1WidthMatrix2Height, int matrix2Width)
         {
@@ -66,7 +117,7 @@ namespace GiantMatrixOnGPU
 
             matrix1Buffer.Dispose();
             matrix2Buffer.Dispose();
-            retBuffer.Dispose(); 
+            retBuffer.Dispose();
 
             return ret;
         }

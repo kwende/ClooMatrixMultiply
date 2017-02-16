@@ -29,17 +29,27 @@ namespace GiantMatrixOnGPU
             }
             cpuSw.Stop();
 
-            Stopwatch gpuSw = new Stopwatch();
-            gpuSw.Start();
+            Stopwatch gpuSwCopy = new Stopwatch();
+            gpuSwCopy.Start();
             for (int c = 0; c < NumberOfIterations; c++)
             {
                 float[] result = gpu.MultiplyMatrices(matrix1, matrix2, MatrixHeight, MatrixHeight, MatrixWidth);
             }
-            gpuSw.Stop();
+            gpuSwCopy.Stop();
+
+            Stopwatch gpuSwNoCopy = new Stopwatch();
+            gpuSwNoCopy.Start();
+            for (int c = 0; c < NumberOfIterations; c++)
+            {
+                float[] result = gpu.MultiplyMatricesZeroCopy(matrix1, matrix2, MatrixHeight, MatrixHeight, MatrixWidth);
+            }
+            gpuSwNoCopy.Stop();
 
             Console.WriteLine($"CPU Matrix multiplication: {cpuSw.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
-            Console.WriteLine($"GPU Matrix multiplication: {gpuSw.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
-            Console.WriteLine($"GPU is {cpuSw.ElapsedMilliseconds / (gpuSw.ElapsedMilliseconds * 1.0f)}x faster."); 
+            Console.WriteLine($"GPU Matrix multiplication (copy): {gpuSwCopy.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
+            Console.WriteLine($"GPU Matrix multiplication (zero copy): {gpuSwNoCopy.ElapsedMilliseconds / (NumberOfIterations * 1.0f)}ms");
+            Console.WriteLine($"GPU (w/ copy) is {cpuSw.ElapsedMilliseconds / (gpuSwCopy.ElapsedMilliseconds * 1.0f)}x faster.");
+            Console.WriteLine($"GPU (zero copy) is {cpuSw.ElapsedMilliseconds / (gpuSwNoCopy.ElapsedMilliseconds * 1.0f)}x faster.");
             Console.ReadLine();
 
             return;

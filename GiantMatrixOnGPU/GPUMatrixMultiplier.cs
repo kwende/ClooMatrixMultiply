@@ -47,7 +47,7 @@ namespace GiantMatrixOnGPU
 
             _commandQueue.Execute(_kernel,
                 new long[] { 0 },
-                new long[] { matrix1Height, matrix2Width },
+                new long[] { matrix2Width, matrix1Height },
                 null, null);
 
             unsafe
@@ -63,6 +63,11 @@ namespace GiantMatrixOnGPU
                     _commandQueue.Finish();
                 }
             }
+
+            matrix1Buffer.Dispose();
+            matrix2Buffer.Dispose();
+            retBuffer.Dispose(); 
+
             return ret;
         }
 
